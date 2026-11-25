@@ -1,0 +1,23 @@
+{% comment %}
+  Collection Grid — App Block
+  target: section → the merchant adds it to a collection page in the Theme Editor.
+  Data is passed to JS through data attributes rendered by Liquid, because
+  window.Shopify may be undefined in dev mode.
+{% endcomment %}
+
+<div
+  class="saas-collection-grid"
+  data-collection-handle="{{ collection.handle | default: '' }}"
+  data-shop-domain="{{ shop.permanent_domain }}"
+>
+</div>
+
+{% schema %}
+{
+  "name": "Collection Grid (Hybrid)",
+  "target": "section",
+  "javascript": "collection.js",
+  "stylesheet": "collection.css",
+  "settings": []
+}
+{% endschema %}

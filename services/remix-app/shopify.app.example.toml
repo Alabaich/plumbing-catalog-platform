@@ -1,0 +1,23 @@
+# Shopify App client ID from the Partner Dashboard
+client_id = "YOUR_CLIENT_ID_HERE"
+name = "Plumbing App (Dev)"
+application_url = "https://your-app.example.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+
+[webhooks]
+# Use the current supported API version
+api_version = "2026-07"
+
+[access_scopes]
+# read_products is required to verify existing products and avoid duplicates
+scopes = "write_products, read_products, write_price_rules, read_price_rules"
+
+[auth]
+redirect_urls = [
+  "https://your-app.example.com/auth/callback",
+  "https://your-app.example.com/auth/shopify/callback",
+  "https://your-app.example.com/api/auth/callback"
+]

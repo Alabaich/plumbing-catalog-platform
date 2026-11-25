@@ -1,0 +1,54 @@
+
+services:
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+      - ./infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+
+  typesense:
+    image: typesense/typesense:27.1
+    volumes:
+      - typesense_data:/data
+    command: '--data-dir /data --api-key=${TYPESENSE_API_KEY}'
+    restart: unless-stopped
+
+  # api:
+  #   build: ./services/api
+  #   env_file: .env
+  #   volumes:
+  #     - ./logs/api:/app/logs
+  #   depends_on:
+  #     - redis
+  #     - typesense
+  #   restart: unless-stopped
+
+  # scrapers:
+  #   build: ./services/scrapers
+  #   env_file: .env
+  #   volumes:
+  #     - ./logs/scrapers:/app/logs
+  #   depends_on:
+  #     - redis
+  #   restart: unless-stopped
+
+  # enrichment-worker:
+  #   build: ./services/scrapers
+  #   command: ['python', 'enrichment_worker.py']
+  #   env_file: .env
+  #   volumes:
+  #     - ./logs/scrapers:/app/logs
+  #   depends_on:
+  #     - redis
+  #   restart: unless-stopped
+
+  # remix-app:
+  #   build: ./services/remix-app
+  #   env_file: .env
+  #   restart: unless-stopped
+
+volumes:
+  redis_data:
+  typesense_data:

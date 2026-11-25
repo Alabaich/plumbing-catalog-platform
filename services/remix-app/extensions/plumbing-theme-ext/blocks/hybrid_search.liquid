@@ -1,0 +1,15 @@
+{% comment %}
+  Hybrid Search — App Embed Block
+  target: body → shows up under "App embeds" in the Theme Editor.
+  The script attaches to the native Shopify search input on any page.
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Hybrid Search",
+  "target": "body",
+  "javascript": "search.js",
+  "stylesheet": "search.css",
+  "settings": []
+}
+{% endschema %}

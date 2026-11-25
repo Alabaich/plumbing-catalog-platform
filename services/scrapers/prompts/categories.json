@@ -1,0 +1,89 @@
+{
+  "Hardware": {
+    "Plumbing": {
+      "Plumbing Fixtures": {
+        "Bathtubs": [
+          "Alcove Bathtubs",
+          "Drop-In Bathtubs",
+          "Freestanding Bathtubs"
+        ],
+        "Faucets": [
+          "Bathroom Sink Faucets",
+          "Bathtub & Shower Faucets",
+          "Kitchen Sink Faucets"
+        ],
+        "Shower Stalls & Kits": [],
+        "Sinks": {
+          "Bathroom Sinks": [
+            "Pedestal Sinks",
+            "Undermount Sinks",
+            "Vessel Sinks"
+          ],
+          "Kitchen & Utility Sinks": [
+            "Drop-In Sinks",
+            "Farmhouse Sinks",
+            "Undermount Sinks"
+          ]
+        },
+        "Toilets & Bidets": {
+          "Bidets": [],
+          "Toilets": [
+            "One-Piece Toilets",
+            "Two-Piece Toilets",
+            "Wall-Mounted Toilets"
+          ],
+          "Urinals": []
+        }
+      },
+      "Plumbing Fixture Hardware & Parts": {
+        "Bathtub Accessories": [],
+        "Drain Components": [],
+        "Drains": [],
+        "Faucet Accessories": [],
+        "Fixture Plates": [],
+        "Shower Parts": [
+          "Shower Arms & Connectors",
+          "Shower Bases",
+          "Shower Columns",
+          "Shower Doors & Enclosures",
+          "Shower Heads"
+        ],
+        "Sink Accessories": [],
+        "Toilet & Bidet Accessories": [
+          "Bidet Faucets & Sprayers",
+          "Toilet & Bidet Seats",
+          "Toilet Tank Levers",
+          "Toilet Tanks",
+          "Toilet Trim"
+        ]
+      },
+      "Plumbing Fittings & Supports": [],
+      "Water Dispensing & Filtration": [
+        "In-Line Water Filters",
+        "Water Dispensers",
+        "Water Filtration Accessories"
+      ]
+    }
+  },
+  "Home & Garden": {
+    "Bathroom Accessories": [
+      "Shower Rods",
+      "Soap & Lotion Dispensers",
+      "Toilet Paper Holders",
+      "Towel Racks & Holders"
+    ],
+    "Decor": {
+      "Mirrors": []
+    },
+    "Lighting": {
+      "Lighting Fixtures": []
+    }
+  },
+  "Furniture": {
+    "Cabinets & Storage": {
+      "Vanities": [
+        "Bathroom Vanities"
+      ]
+    }
+  }
+}

@@ -1,0 +1,67 @@
+# Environment - NEVER commit
+.env
+.env.*
+*.env
+!.env.example
+
+# Logs
+logs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node / build artifacts
+node_modules/
+.next/
+.cache/
+.react-router/
+build/
+dist/
+services/remix-app/build/
+services/remix-app/.cache/
+
+# Docker
+*.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Typesense data (lives on server, not in repo)
+infra/typesense/data/
+
+# Backups and DB dumps (never in repo)
+*.dump
+*.sql
+*.sql.gz
+*.backup
+*.bak
+dump.rdb
+
+# Logs and runtime data
+*.log
+services/remix-app/data/
+
+# Local SQLite databases
+*.sqlite
+*.sqlite-journal
+
+# Shopify local config — committed only as shopify.app.toml.example
+shopify.app.toml
+shopify.app.*.toml
+!shopify.app.toml.example
+!shopify.app.example.toml
+
+# Scratch / one-off test scripts
+services/api/test_query.py

@@ -1,0 +1,20 @@
+# Domains come from the environment so the same file works on any host:
+#   API_DOMAIN=api.example.com ADMIN_DOMAIN=admin.example.com caddy run
+# Caddy provisions TLS certificates for both automatically.
+
+# FastAPI backend
+{$API_DOMAIN} {
+    reverse_proxy localhost:8000
+    encode gzip
+    header {
+        -Server
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Strict-Transport-Security max-age=31536000
+    }
+}
+
+# Remix embedded admin (remix-app is published on 127.0.0.1:4200 in docker-compose.prod.yml)
+{$ADMIN_DOMAIN} {
+    reverse_proxy localhost:4200
+}

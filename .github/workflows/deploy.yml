@@ -1,0 +1,89 @@
+name: Release
+
+# Deployment is OFF by default. It runs only when the repository variable
+# DEPLOY_ENABLED is set to 'true' and every DEPLOY_* secret is present.
+# See "Deployment" in README.md.
+#
+# Never triggered by pull requests: only by a push to main or a manual run.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy
+    needs: ci                                   # runs only after every CI job succeeded
+    # Variable missing or not 'true' → the job is skipped, not failed.
+    if: vars.DEPLOY_ENABLED == 'true' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production                     # add required reviewers there for manual approval
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false                 # a running deploy is never interrupted
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+    steps:
+      - name: Check deploy secrets
+        id: secrets
+        run: |
+          missing=""
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_KNOWN_HOSTS DEPLOY_PATH; do
+            if [ -z "${!name}" ]; then
+              missing="$missing $name"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::warning title=Deploy skipped::Missing secret(s):$missing. Nothing was deployed and no connection was attempted."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "All deploy secrets are set."
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Configure SSH
+        if: steps.secrets.outputs.ready == 'true'
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # Host keys come only from the secret; unknown hosts are refused.
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy
+        id: deploy
+        if: steps.secrets.outputs.ready == 'true'
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+              -o IdentitiesOnly=yes \
+              -o BatchMode=yes \
+              -o StrictHostKeyChecking=yes \
+              -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+              "$DEPLOY_USER@$DEPLOY_HOST" \
+              "bash -s -- $(printf '%q' "$DEPLOY_PATH")" <<'REMOTE'
+          set -euo pipefail
+          cd "$1"
+          git pull --ff-only
+          bash scripts/deploy.sh
+          REMOTE
+
+      - name: Rollback hint
+        if: failure() && steps.deploy.conclusion == 'failure'
+        run: |
+          echo "::error title=Deploy failed::The deploy did not complete. Check the server state, then roll back by hand if needed: cd <DEPLOY_PATH> && bash scripts/rollback.sh"
+
+      - name: Remove SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

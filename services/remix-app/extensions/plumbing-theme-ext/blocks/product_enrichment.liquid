@@ -1,0 +1,12 @@
+<div class="saas-product-enrichment" data-sku="{{ product.variants.first.sku }}" data-product-id="{{ product.id }}">
+</div>
+
+{% schema %}
+{
+  "name": "Product Enrichment",
+  "target": "section",
+  "javascript": "enrichment.js",
+  "stylesheet": "enrichment.css",
+  "settings": []
+}
+{% endschema %}

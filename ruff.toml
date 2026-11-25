@@ -1,0 +1,16 @@
+# Minimal lint: real errors only, no style rules.
+target-version = "py311"
+extend-exclude = ["services/remix-app"]
+
+[lint]
+select = [
+    "E9",    # syntax and IO errors
+    "F",     # pyflakes: undefined names, redefinitions, broken format strings
+    "PLE",   # pylint errors
+    "W605",  # invalid escape sequences
+]
+ignore = [
+    "F401",  # unused imports
+    "F541",  # f-string without placeholders
+    "F841",  # unused local variables
+]

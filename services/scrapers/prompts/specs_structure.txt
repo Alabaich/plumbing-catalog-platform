@@ -1,0 +1,10 @@
+html_specs_table
+
+Collect the technical specifications of the product into one HTML table.
+
+- Sources, in order of trust: the spec-sheet text, then the scraped HTML. When they disagree, use the spec sheet.
+- Typical rows: dimensions, material, finish, flow rate, pressure range, connection or thread size, drain size, installation type, weight, certifications, warranty.
+- One specification per row with two cells: <th> for the name, <td> for the value. Keep the units exactly as the source gives them and do not convert between metric and imperial.
+- Copy values from the source. Never estimate or fill in a value that is not there.
+- Allowed tags: table, tbody, tr, th, td. No attributes and no inline styles; the storefront theme styles the table.
+- If the sources contain no technical data, return an empty string.

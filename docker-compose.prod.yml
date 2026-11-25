@@ -1,0 +1,125 @@
+
+services:
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+      - ./infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+    restart: always
+    networks:
+      - internal
+
+  typesense:
+    ports:
+    - '127.0.0.1:8108:8108'
+    image: typesense/typesense:27.1
+    volumes:
+      - typesense_data:/data
+    command: '--data-dir /data --api-key=${TYPESENSE_API_KEY}'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 3G
+    restart: always
+    networks:
+      - internal
+
+  scrapers:
+      build: ./services/scrapers
+      env_file: .env
+      environment:
+        - DATABASE_URL=
+        - DB_HOST=host.docker.internal
+      shm_size: '4g'
+      volumes:
+        - ./logs/scrapers:/app/logs
+      deploy:
+        resources:
+          limits:
+            cpus: '3.0'
+            memory: 8G
+      restart: unless-stopped
+      networks:
+        - internal
+      extra_hosts:
+        - 'host.docker.internal:host-gateway'
+  api:
+    build: ./services/api
+    env_file: .env
+    ports:
+      - '127.0.0.1:8000:8000'
+    volumes:
+      - ./logs/api:/app/logs
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+    restart: always
+    depends_on:
+      - redis
+      - typesense
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - internal
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  # RQ worker for LLM enrichment jobs. Same image as the scrapers.
+  # Idles when LLM_API_KEY is not set (the orchestrator enqueues nothing).
+  enrichment-worker:
+    build: ./services/scrapers
+    command: ['python', 'enrichment_worker.py']
+    env_file: .env
+    environment:
+      - DATABASE_URL=
+      - DB_HOST=host.docker.internal
+    volumes:
+      - ./logs/scrapers:/app/logs
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    restart: unless-stopped
+    depends_on:
+      - redis
+    networks:
+      - internal
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  remix-app:
+    build: ./services/remix-app
+    env_file: .env
+    ports:
+      - '127.0.0.1:4200:3000'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    restart: always
+    networks:
+      - internal
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  redis_data:
+  typesense_data:
